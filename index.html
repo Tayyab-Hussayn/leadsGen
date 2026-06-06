@@ -1,0 +1,2129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Axon | Lead Suite & AI Chatbot</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=DM+Serif+Display:ital@0;1&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --sidebar-w: 240px;
+            --bg-outer: linear-gradient(135deg, #d8cfc9 0%, #c9b5a8 40%, #e8a98a 100%);
+            --bg-main: #f6f4f2;
+            --chat-bg: radial-gradient(at 0% 0%, rgba(69, 52, 120, 0.08) 0%, transparent 50%),
+                        radial-gradient(at 100% 100%, rgba(69, 52, 120, 0.05) 0%, transparent 50%),
+                        #f6f4f2;
+            --sidebar-bg: #ffffff;
+            --border: #eae6e0;
+            --border-light: #f3f0ec;
+
+            --text-primary: #1a1714;
+            --text-secondary: #746d66;
+            --text-muted: #b4aba2;
+
+            --nav-active-bg: #efeae4;
+            --card-bg: #ffffff;
+
+            --accent: #453478;
+            --accent-hover: #35275e;
+            --accent-light: rgba(69, 52, 120, 0.08);
+            --accent-highlight: #ff8c5a;
+
+            --bubble-user-bg: #1a1714;
+            --bubble-user-text: #ffffff;
+            --bubble-bot-bg: #ffffff;
+            --bubble-bot-text: #1a1714;
+
+            --badge-bg: #1a1714;
+            --badge-text: #ffffff;
+
+            --radius-sm: 10px;
+            --radius-md: 16px;
+            --radius-lg: 22px;
+            --radius-xl: 28px;
+
+            --shadow-soft: 0 2px 16px rgba(0,0,0,0.04);
+            --shadow-md: 0 6px 24px rgba(26, 23, 20, 0.06);
+            --shadow-lg: 0 12px 36px rgba(26, 23, 20, 0.1);
+
+            --font-main: 'DM Sans', sans-serif;
+            --font-display: 'DM Serif Display', serif;
+            --font-mono: 'Fira Code', monospace;
+        }
+
+        html, body {
+            height: 100%; width: 100%;
+            font-family: var(--font-main);
+            background: var(--bg-outer);
+            overflow: hidden;
+            color: var(--text-primary);
+        }
+
+        .app-container {
+            display: flex;
+            width: 100vw;
+            height: 100vh;
+            background: var(--bg-main);
+            animation: appIn 0.5s cubic-bezier(.22,1,.36,1) both;
+            overflow: hidden;
+        }
+
+        @keyframes appIn {
+            from { opacity: 0; transform: translateY(8px) scale(0.99); }
+            to   { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        /* ══════════════════════════════
+           SIDEBAR
+        ══════════════════════════════ */
+        .sidebar {
+            width: var(--sidebar-w);
+            flex-shrink: 0;
+            background: var(--sidebar-bg);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            padding: 24px 16px;
+            overflow: hidden;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding-bottom: 22px;
+            border-bottom: 1px solid var(--border-light);
+            margin-bottom: 16px;
+        }
+
+        .logo-icon {
+            width: 32px; height: 32px; border-radius: 10px;
+            background: var(--accent);
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 4px 12px rgba(69, 52, 120, 0.3);
+        }
+
+        .logo-icon svg { width: 16px; height: 16px; }
+
+        .logo-text {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .logo-name {
+            font-family: var(--font-display);
+            font-size: 19px;
+            color: var(--text-primary);
+            letter-spacing: 0.02em;
+            line-height: 1.1;
+        }
+
+        .logo-sub {
+            font-size: 10px;
+            color: var(--text-muted);
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .nav-list {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            flex: 1;
+            margin-top: 10px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 11px 14px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            transition: all 0.2s ease;
+            user-select: none;
+        }
+
+        .nav-item:hover {
+            background: var(--border-light);
+            color: var(--text-primary);
+        }
+
+        .nav-item.active {
+            background: var(--nav-active-bg);
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        .nav-item svg {
+            width: 18px; height: 18px;
+            transition: transform 0.2s;
+        }
+
+        .nav-item.active svg {
+            color: var(--accent);
+        }
+
+        .nav-divider {
+            height: 1px;
+            background: var(--border-light);
+            margin: 12px 0;
+        }
+
+        .sidebar-footer {
+            margin-top: auto;
+            padding-top: 16px;
+            border-top: 1px solid var(--border-light);
+        }
+
+        .wa-status-pill {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            border-radius: var(--radius-sm);
+            background: var(--border-light);
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .wa-dot {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background: #d4a88c; /* disconnected */
+            position: relative;
+        }
+
+        .wa-dot.connected {
+            background: #52c41a;
+            box-shadow: 0 0 8px rgba(82, 196, 26, 0.6);
+        }
+
+        .wa-dot.connected::after {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border-radius: 50%;
+            border: 2px solid #52c41a;
+            animation: pulse-dot 1.8s ease-in-out infinite;
+        }
+
+        @keyframes pulse-dot {
+            0% { transform: scale(1); opacity: 0.8; }
+            100% { transform: scale(1.6); opacity: 0; }
+        }
+
+        /* ══════════════════════════════
+           MAIN SHELL
+        ══════════════════════════════ */
+        .main-shell {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Views */
+        .view-pane {
+            display: none;
+            flex: 1;
+            flex-direction: column;
+            overflow: hidden;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .view-pane.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Header / Toolbar */
+        .view-header {
+            height: 64px;
+            padding: 0 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--sidebar-bg);
+            border-bottom: 1px solid var(--border);
+            flex-shrink: 0;
+        }
+
+        .view-title {
+            font-family: var(--font-display);
+            font-size: 20px;
+            color: var(--text-primary);
+        }
+
+        .view-subtitle {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+
+        .view-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px 32px;
+        }
+
+        .view-body::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .view-body::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 4px;
+        }
+
+        /* ══════════════════════════════
+           DASHBOARD VIEW
+        ══════════════════════════════ */
+        .welcome-card {
+            background: linear-gradient(135deg, #efeae5 0%, #e2d7cc 100%);
+            border-radius: var(--radius-md);
+            padding: 32px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow-soft);
+            margin-bottom: 24px;
+        }
+
+        .welcome-card-content {
+            position: relative;
+            z-index: 2;
+            max-width: 500px;
+        }
+
+        .welcome-card h2 {
+            font-family: var(--font-display);
+            font-size: 28px;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .welcome-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 16px;
+        }
+
+        .welcome-star {
+            position: absolute;
+            right: 40px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 100px;
+            height: 100px;
+            filter: drop-shadow(0 0 16px rgba(232, 169, 138, 0.4));
+            animation: floatStar 5s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes floatStar {
+            0%, 100% { transform: translateY(-50%) translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-50%) translateY(-10px) rotate(5deg); }
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+
+        .stats-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 20px 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            box-shadow: var(--shadow-soft);
+            transition: transform 0.25s, box-shadow 0.25s;
+        }
+
+        .stats-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .stats-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .stats-value {
+            font-size: 28px;
+            font-weight: 600;
+            font-family: var(--font-display);
+            color: var(--text-primary);
+        }
+
+        .stats-desc {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .recent-actions {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: 20px;
+        }
+
+        .content-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 24px;
+            box-shadow: var(--shadow-soft);
+        }
+
+        .content-card h3 {
+            font-family: var(--font-display);
+            font-size: 16px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        /* ══════════════════════════════
+           LEADS HUNTER VIEW
+        ══════════════════════════════ */
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 120px 150px;
+            gap: 12px;
+            align-items: end;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 900px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .input-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .text-input {
+            padding: 10px 14px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border);
+            font-family: var(--font-main);
+            font-size: 13.5px;
+            background: var(--card-bg);
+            outline: none;
+            color: var(--text-primary);
+            transition: border-color 0.2s;
+        }
+
+        .text-input:focus {
+            border-color: var(--accent);
+        }
+
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            height: 38px;
+            cursor: pointer;
+            font-size: 13px;
+            user-select: none;
+        }
+
+        .btn {
+            background: var(--accent);
+            color: #ffffff;
+            border: none;
+            border-radius: var(--radius-sm);
+            padding: 10px 16px;
+            font-family: var(--font-main);
+            font-size: 13.5px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            height: 38px;
+        }
+
+        .btn:hover {
+            background: var(--accent-hover);
+        }
+
+        .btn-stop {
+            background: #f5222d;
+        }
+
+        .btn-stop:hover {
+            background: #cf1322;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+        }
+
+        .btn-outline:hover {
+            background: var(--border-light);
+            color: var(--text-primary);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Logs viewport */
+        .console-container {
+            margin-top: 20px;
+            background: #1e1b18;
+            border-radius: var(--radius-sm);
+            border: 1px solid #2d2621;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            box-shadow: inset 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        .console-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 11px;
+            color: #746d66;
+            font-family: var(--font-mono);
+            border-bottom: 1px solid #2d2621;
+            padding-bottom: 8px;
+        }
+
+        .console-title {
+            color: var(--accent-highlight);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .console-body {
+            max-height: 250px;
+            min-height: 120px;
+            overflow-y: auto;
+            font-family: var(--font-mono);
+            font-size: 12px;
+            line-height: 1.6;
+            color: #dcd6cd;
+            white-space: pre-wrap;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            scroll-behavior: smooth;
+        }
+
+        .console-body::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .console-body::-webkit-scrollbar-thumb {
+            background: #2d2621;
+            border-radius: 2px;
+        }
+
+        .console-line {
+            padding: 1px 4px;
+        }
+
+        /* Progress Indicators */
+        .progress-bar-wrap {
+            margin-top: 12px;
+            background: #efeae4;
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-bar-fill {
+            background: var(--accent);
+            height: 100%;
+            width: 0%;
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        .progress-text-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 6px;
+        }
+
+        /* Leads list and tables */
+        .leads-table-container {
+            margin-top: 24px;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            box-shadow: var(--shadow-soft);
+        }
+
+        .table-toolbar {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .table-title {
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        .leads-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 13px;
+        }
+
+        .leads-table th {
+            background: var(--border-light);
+            color: var(--text-secondary);
+            font-weight: 600;
+            padding: 12px 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .leads-table td {
+            padding: 12px 20px;
+            border-bottom: 1px solid var(--border-light);
+            color: var(--text-primary);
+        }
+
+        .leads-table tr:hover td {
+            background: var(--border-light);
+        }
+
+        .leads-table a {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .leads-table a:hover {
+            text-decoration: underline;
+        }
+
+        .list-selector {
+            padding: 8px 12px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border);
+            outline: none;
+            font-family: var(--font-main);
+            font-size: 13px;
+            background: var(--card-bg);
+            max-width: 250px;
+        }
+
+        /* ══════════════════════════════
+           CAMPAIGN OUTREACH VIEW
+        ══════════════════════════════ */
+        .campaign-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 1000px) {
+            .campaign-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .campaign-config-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .whatsapp-login-box {
+            background: #ffffff;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            align-items: center;
+            text-align: center;
+            box-shadow: var(--shadow-soft);
+        }
+
+        .qr-canvas {
+            background: white;
+            color: black;
+            padding: 16px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            margin: 12px 0;
+            user-select: none;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 200px;
+        }
+
+        .template-textarea {
+            height: 140px;
+            resize: vertical;
+            font-family: var(--font-main);
+            font-size: 13px;
+            padding: 10px 14px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border);
+            outline: none;
+            color: var(--text-primary);
+            line-height: 1.5;
+        }
+
+        .template-textarea:focus {
+            border-color: var(--accent);
+        }
+
+        /* ══════════════════════════════
+           AXON CHATBOT VIEW
+        ══════════════════════════════ */
+        .chat-view-container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            background: var(--chat-bg);
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px 10%;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            scroll-behavior: smooth;
+        }
+
+        .chat-messages::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .chat-messages::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 2px;
+        }
+
+        .message-row {
+            display: flex;
+            gap: 12px;
+            max-width: 80%;
+            animation: msgIn 0.3s cubic-bezier(.34,1.4,.64,1);
+        }
+
+        .message-row.user {
+            align-self: flex-end;
+            flex-direction: row-reverse;
+        }
+
+        .message-row.bot {
+            align-self: flex-start;
+        }
+
+        @keyframes msgIn {
+            from { opacity: 0; transform: translateY(8px) scale(0.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .chat-avatar {
+            width: 32px; height: 32px; border-radius: 50%;
+            background: var(--accent);
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: var(--shadow-soft);
+            flex-shrink: 0;
+        }
+
+        .chat-avatar svg { width: 15px; height: 15px; }
+
+        .chat-bubble {
+            padding: 12px 18px;
+            font-size: 14px;
+            line-height: 1.6;
+            border-radius: 18px;
+            word-break: break-word;
+        }
+
+        .message-row.user .chat-bubble {
+            background: var(--bubble-user-bg);
+            color: var(--bubble-user-text);
+            border-radius: 18px 18px 4px 18px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+        }
+
+        .message-row.bot .chat-bubble {
+            background: var(--bubble-bot-bg);
+            color: var(--bubble-bot-text);
+            border-radius: 18px 18px 18px 4px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-soft);
+        }
+
+        /* Markdown formats inside assistant bubble */
+        .chat-bubble p { margin-bottom: 8px; }
+        .chat-bubble p:last-child { margin-bottom: 0; }
+        .chat-bubble strong { font-weight: 600; color: var(--accent); }
+        .chat-bubble pre {
+            background: var(--border-light);
+            padding: 12px;
+            border-radius: var(--radius-sm);
+            overflow-x: auto;
+            font-family: var(--font-mono);
+            font-size: 12.5px;
+            margin: 8px 0;
+            border: 1px solid var(--border);
+        }
+        .chat-bubble code {
+            font-family: var(--font-mono);
+            background: var(--border-light);
+            padding: 2px 5px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+        .chat-bubble pre code { background: none; padding: 0; }
+
+        .msg-time {
+            font-size: 10px;
+            color: var(--text-muted);
+            margin-top: 4px;
+            align-self: flex-end;
+            padding: 0 4px;
+        }
+
+        .message-row.user .msg-time {
+            text-align: right;
+        }
+
+        .chat-input-area {
+            padding: 16px 10%;
+            background: var(--sidebar-bg);
+            border-top: 1px solid var(--border);
+            flex-shrink: 0;
+        }
+
+        .chat-input-wrap {
+            background: var(--bg-main);
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-lg);
+            display: flex;
+            align-items: center;
+            padding: 8px 10px 8px 18px;
+            gap: 12px;
+            box-shadow: var(--shadow-soft);
+            transition: all 0.2s;
+        }
+
+        .chat-input-wrap:focus-within {
+            border-color: var(--accent);
+            box-shadow: var(--shadow-md);
+            background: #ffffff;
+        }
+
+        .chat-textarea {
+            flex: 1;
+            border: none;
+            background: transparent;
+            outline: none;
+            font-family: var(--font-main);
+            font-size: 13.5px;
+            color: var(--text-primary);
+            resize: none;
+            height: 24px;
+            line-height: 1.5;
+            padding: 2px 0;
+        }
+
+        .chat-textarea::placeholder {
+            color: var(--text-muted);
+        }
+
+        .chat-send-btn {
+            width: 34px; height: 34px; border-radius: 50%;
+            background: var(--accent);
+            border: none;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer;
+            transition: transform 0.2s, opacity 0.2s;
+            box-shadow: 0 2px 8px rgba(69, 52, 120, 0.3);
+            flex-shrink: 0;
+        }
+
+        .chat-send-btn:hover {
+            background: var(--accent-hover);
+            transform: scale(1.05);
+        }
+
+        .chat-send-btn:active {
+            transform: scale(0.95);
+        }
+
+        .chat-send-btn svg { width: 14px; height: 14px; }
+
+        .chat-suggestions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 12px;
+        }
+
+        .chat-suggestion-pill {
+            background: #ffffff;
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 6px 14px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: var(--shadow-soft);
+        }
+
+        .chat-suggestion-pill:hover {
+            background: var(--nav-active-bg);
+            border-color: var(--accent);
+            transform: translateY(-1px);
+        }
+
+        /* Typing indicator */
+        .typing-indicator {
+            display: flex;
+            gap: 4px;
+            padding: 6px 10px;
+            align-items: center;
+        }
+
+        .typing-dot {
+            width: 6px; height: 6px; border-radius: 50%;
+            background: var(--text-muted);
+            animation: typing-bounce 1.2s infinite ease-in-out;
+        }
+
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes typing-bounce {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-4px); }
+        }
+
+        /* Empty state views */
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            color: var(--text-secondary);
+            text-align: center;
+            gap: 12px;
+        }
+
+        .empty-state svg {
+            width: 48px; height: 48px;
+            color: var(--text-muted);
+        }
+
+        .empty-state-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .empty-state-desc {
+            font-size: 12.5px;
+            max-width: 320px;
+        }
+
+        /* Notifications Toast */
+        .toast-container {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .toast {
+            background: #ffffff;
+            border-left: 4px solid var(--accent);
+            border-radius: 4px;
+            padding: 14px 20px;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: toastIn 0.3s ease forwards;
+            font-size: 13.5px;
+            font-weight: 500;
+        }
+
+        @keyframes toastIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .toast.success { border-left-color: #52c41a; }
+        .toast.error { border-left-color: #f5222d; }
+        .toast.info { border-left-color: #1890ff; }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    
+    <!-- ── LEFT SIDEBAR ── -->
+    <aside class="sidebar">
+        <div class="logo">
+            <div class="logo-icon">
+                <!-- Glowing 4-point star SVG -->
+                <svg viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="7.5" cy="7.5" r="6" stroke="#fff" stroke-width="1.3"/>
+                    <path d="M7.5 3.8L8.5 6.6L11.2 7.5L8.5 8.4L7.5 11.2L6.5 8.4L3.8 7.5L6.5 6.6Z" fill="#fff"/>
+                </svg>
+            </div>
+            <div class="logo-text">
+                <span class="logo-name">Axon</span>
+                <span class="logo-sub">Lead Suite</span>
+            </div>
+        </div>
+
+        <nav class="nav-list">
+            <div class="nav-item active" onclick="switchTab('dashboard')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                Dashboard
+            </div>
+            <div class="nav-item" onclick="switchTab('hunter')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="22" y1="12" x2="18" y2="12"></line><line x1="6" y1="12" x2="2" y2="12"></line><line x1="12" y1="6" x2="12" y2="2"></line><line x1="12" y1="22" x2="12" y2="18"></line></svg>
+                Lead Hunter
+            </div>
+            <div class="nav-item" onclick="switchTab('sender')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                WhatsApp Campaigns
+            </div>
+            
+            <div class="nav-divider"></div>
+            
+            <div class="nav-item" onclick="switchTab('chatbot')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+                Axon AI Chat
+            </div>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="wa-status-pill">
+                <div class="wa-dot" id="waStatusDot"></div>
+                <span id="waStatusText">WhatsApp Disconnected</span>
+            </div>
+        </div>
+    </aside>
+
+    <!-- ── MAIN CONTENT SHELL ── -->
+    <main class="main-shell">
+        
+        <!-- -------------------------------------------------------------
+             1. DASHBOARD VIEW
+        ------------------------------------------------------------- -->
+        <div class="view-pane active" id="pane-dashboard">
+            <div class="view-header">
+                <div>
+                    <h1 class="view-title">Overview</h1>
+                    <p class="view-subtitle">Agent activity status and key outreach metrics</p>
+                </div>
+            </div>
+            <div class="view-body">
+                <div class="welcome-card">
+                    <div class="welcome-card-content">
+                        <h2>Axon Lead Generation Suite</h2>
+                        <p>Welcome, Tayyab! Retrieve local business leads from Google Maps automatically, verify their details, and send personalized WhatsApp campaigns in minutes.</p>
+                        <button class="btn" onclick="switchTab('hunter')">
+                            Start Hunting Leads
+                        </button>
+                    </div>
+                    <!-- Compass Star SVG decoration -->
+                    <svg class="welcome-star" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <radialGradient id="grad1" cx="50%" cy="30%" r="70%">
+                                <stop offset="0%" stop-color="#ff8c5a"/>
+                                <stop offset="50%" stop-color="#e8a98a"/>
+                                <stop offset="100%" stop-color="#453478"/>
+                            </radialGradient>
+                        </defs>
+                        <path d="M40 4 C40 4 43 27 40 40 C40 40 63 37 76 40 C76 40 53 43 40 40 C40 40 43 63 40 76 C40 76 37 53 40 40 C40 40 17 43 4 40 C4 40 27 37 40 40 C40 40 37 17 40 4Z" fill="url(#grad1)"/>
+                    </svg>
+                </div>
+
+                <div class="dashboard-grid">
+                    <div class="stats-card">
+                        <span class="stats-label">Scraped Lists</span>
+                        <span class="stats-value" id="statScrapedLists">0</span>
+                        <span class="stats-desc">Total CSV lists generated</span>
+                    </div>
+                    <div class="stats-card">
+                        <span class="stats-label">Leads Hunted</span>
+                        <span class="stats-value" id="statTotalLeads">0</span>
+                        <span class="stats-desc">Qualified business contacts</span>
+                    </div>
+                    <div class="stats-card">
+                        <span class="stats-label">WhatsApp Link</span>
+                        <span class="stats-value" id="statWhatsAppState">Offline</span>
+                        <span class="stats-desc" id="statWhatsAppDetail">Disconnected</span>
+                    </div>
+                </div>
+
+                <div class="recent-actions">
+                    <div class="content-card">
+                        <h3>Scrape History</h3>
+                        <div id="dashboardHistoryList">
+                            <div class="empty-state">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                                <span class="empty-state-title">No search lists found</span>
+                                <span class="empty-state-desc">Start your first lead scrape in the Lead Hunter tab.</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="content-card">
+                        <h3>Outreach Assistant</h3>
+                        <p style="font-size: 13.5px; color: var(--text-secondary); line-height: 1.5; margin-bottom: 12px;">Need help polishing your messages or figuring out a campaign strategy? Chat with Axon, your AI assistant.</p>
+                        <button class="btn btn-outline" style="width: 100%;" onclick="switchTab('chatbot')">
+                            Open Chat Assistant
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- -------------------------------------------------------------
+             2. LEAD HUNTER VIEW
+        ------------------------------------------------------------- -->
+        <div class="view-pane" id="pane-hunter">
+            <div class="view-header">
+                <div>
+                    <h1 class="view-title">Google Maps Lead Hunter</h1>
+                    <p class="view-subtitle">Search Google Maps for businesses without websites to target for web development</p>
+                </div>
+            </div>
+            <div class="view-body">
+                <div class="content-card" style="margin-bottom: 24px;">
+                    <h3>Launch New Search</h3>
+                    
+                    <div class="form-row">
+                        <div class="input-group">
+                            <label class="input-label" for="huntLocation">Location (e.g. Johar Town Lahore)</label>
+                            <input class="text-input" type="text" id="huntLocation" placeholder="Enter city, town, or area">
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label" for="huntCategory">Business Type (e.g. Restaurant, Pharmacy)</label>
+                            <input class="text-input" type="text" id="huntCategory" placeholder="e.g. restaurant, gym, bakery">
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label">Runner Mode</label>
+                            <label class="checkbox-container">
+                                <input type="checkbox" id="huntHeadless" checked>
+                                Headless (Silent)
+                            </label>
+                        </div>
+                        <div>
+                            <button class="btn" id="btnHuntStart" onclick="startHunting()">
+                                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                                Hunt Leads
+                            </button>
+                            <button class="btn btn-stop" id="btnHuntStop" onclick="stopHunting()" style="display: none;">
+                                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"></rect></svg>
+                                Stop Scraper
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Progress Bar -->
+                    <div id="huntProgressContainer" style="display: none;">
+                        <div class="progress-bar-wrap">
+                            <div class="progress-bar-fill" id="huntProgressBar"></div>
+                        </div>
+                        <div class="progress-text-row">
+                            <span id="huntProgressText">Starting process...</span>
+                            <span id="huntProgressPercent">0%</span>
+                        </div>
+                    </div>
+
+                    <!-- Console Logs -->
+                    <div class="console-container" id="hunterConsoleContainer" style="display: none;">
+                        <div class="console-header">
+                            <span class="console-title">
+                                <span class="typing-dot" style="background:#ff8c5a"></span>
+                                SCRAPER LIVE STANDARD OUTPUT
+                            </span>
+                            <span id="consoleTime">00:00:00</span>
+                        </div>
+                        <div class="console-body" id="hunterConsole">
+                            <!-- Lines added dynamically -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Historical Tables -->
+                <div class="leads-table-container">
+                    <div class="table-toolbar">
+                        <span class="table-title">Inspecting Lead Database</span>
+                        <div style="display: flex; gap: 10px; align-items: center;">
+                            <label class="input-label" style="margin-bottom:0;">Source List:</label>
+                            <select class="list-selector" id="leadsFileSelector" onchange="loadSelectedLeadsFile()">
+                                <option value="">No lists found</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div style="overflow-x: auto;">
+                        <table class="leads-table" id="leadsTable">
+                            <thead>
+                                <tr>
+                                    <th>Business Name</th>
+                                    <th>Phone Number</th>
+                                    <th>Google Maps URL</th>
+                                    <th>Outreach Link</th>
+                                </tr>
+                            </thead>
+                            <tbody id="leadsTableBody">
+                                <tr>
+                                    <td colspan="4" style="text-align: center; color: var(--text-secondary); padding: 32px 0;">
+                                        Select a lead list from the dropdown to inspect verified contacts.
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- -------------------------------------------------------------
+             3. WHATSAPP CAMPAIGNS VIEW
+        ------------------------------------------------------------- -->
+        <div class="view-pane" id="pane-sender">
+            <div class="view-header">
+                <div>
+                    <h1 class="view-title">WhatsApp Campaigns</h1>
+                    <p class="view-subtitle">Send structured cold messaging outreach to leads without websites</p>
+                </div>
+            </div>
+            <div class="view-body">
+                <div class="campaign-layout">
+                    
+                    <!-- Form side -->
+                    <div class="campaign-config-panel">
+                        <div class="content-card">
+                            <h3>1. Select Outreach Target</h3>
+                            <div class="input-group" style="margin-top: 12px;">
+                                <label class="input-label" for="campaignFileSelector">Choose Leads CSV List</label>
+                                <select class="text-input" id="campaignFileSelector" style="width: 100%;">
+                                    <option value="">No lists found</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="content-card">
+                            <h3>2. Personalize Outreach Scripts</h3>
+                            
+                            <div class="input-group" style="margin-top: 12px;">
+                                <label class="input-label" for="msgTemplate1">Message 1 (Pitch Introduction)</label>
+                                <textarea class="template-textarea" id="msgTemplate1">Assalam u Alaikum! 🙏
+Umeed hai aap aur aap ka business achha chal raha hoga.
+Main Tayyab hoon, web developer. Aap ka waqt zeaya nahi karoonga — seedhi baat karta hoon.
+Lahore mein jo restaurants tezi se grow kar rahe hain, unka ek common factor hai — unke paas apna online ordering system hai. Foodpanda pe hona kafi nahi, kyunki wo har order ka 25–30% commission le leta hai.
+Apni website pe direct order = poora paisa aap ka, apni brand aap ki.
+Maine ek ready system banaya hua hai:
+✅ Poora menu online — customers phone se order karein
+✅ Simple admin dashboard — har order ek jagah
+✅ Koi commission nahi — har sale 100% aap ki
+✅ Aap ki apni identity — kisi app ki listing nahi
+Agar aap ko suitable lage toh 15–20 minute ki mulaqat mein aap ka system live kar dete hain. Main khud aap ke restaurant pe aane ko tayyar hoon — aap ka koi effort nahi.
+Shukriya aap ke waqt ka. Aap ka jawab mera intezaar karega. 🤝
+Tayyab Hussain
+Agentic Automation & Web Developer</textarea>
+                            </div>
+
+                            <div class="input-group" style="margin-top: 12px;">
+                                <label class="input-label" for="msgTemplate2">Message 2 (Demo Showcase - Sent 5s later)</label>
+                                <textarea class="template-textarea" id="msgTemplate2">Aur ek baat — aap ki convenience ke liye ek live demo website pehle se tayyar kar di hai taake aap khud dekh sakein ke yeh system exactly kaise kaam karta hai.
+Ek baar zaroor visit karein 👇
+🌐 https://urban-restaurant.vercel.app
+Yahan aap poora menu, dishes aur ordering flow dekh sakte hain — exactly waise jaise aap ke customers ko nazar aayega.
+Admin dashboard bhi zaroor check karein 👇
+🔐 https://urban-restaurant.vercel.app/admin
+📌 Password: admin123
+Yahan dekhein ge ke customer orders kaise aate hain, kaise manage hote hain — sab kuch ek jagah, clear aur organized.
+Ek baar poora system khud dekh lein, phir apni rai zaroor share karein. Aap ka feedback mera intezaar karega. 🙏</textarea>
+                            </div>
+                        </div>
+
+                        <div style="display: flex; gap: 12px;">
+                            <button class="btn" style="flex: 1;" id="btnCampaignStart" onclick="startCampaign()">
+                                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="22 2 15 22 11 13 2 9 22 2"></polyline><line x1="22" y1="2" x2="11" y2="13"></line></svg>
+                                Launch Outreach Campaign
+                            </button>
+                            <button class="btn btn-stop" style="flex: 1; display: none;" id="btnCampaignStop" onclick="stopCampaign()">
+                                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"></rect></svg>
+                                Stop Campaign
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- WhatsApp and Progress Monitor side -->
+                    <div style="display: flex; flex-direction: column; gap: 20px;">
+                        
+                        <!-- Client Login Portal -->
+                        <div class="whatsapp-login-box" id="waLoginPortal">
+                            <h3>WhatsApp Client Auth</h3>
+                            <p style="font-size:12.5px; color:var(--text-secondary);">Authenticate this server's WhatsApp client to begin outreach campaigns.</p>
+                            
+                            <div id="waAuthStatusText" style="font-weight: 600; margin: 8px 0; color: #d4a88c;">
+                                Status: Offline
+                            </div>
+
+                            <button class="btn" id="btnWaLogin" onclick="startWaLogin()">Link Mobile Device</button>
+                            <button class="btn btn-stop" id="btnWaLogout" onclick="logoutWa()" style="display: none;">Unlink Device</button>
+
+                            <!-- QR View -->
+                            <div id="waQrCodeWrapper" style="display: none; width: 100%;">
+                                <div class="qr-canvas" id="waQrCode">Generating QR code...</div>
+                                <p style="font-size:11.5px; color:var(--text-secondary);">Open WhatsApp on your phone &rarr; Settings &rarr; Linked Devices &rarr; Scan this code.</p>
+                                <button class="btn btn-outline" style="margin-top: 10px; width: 100%;" onclick="cancelWaLogin()">Cancel Link</button>
+                            </div>
+                        </div>
+
+                        <!-- Progress Monitor -->
+                        <div class="content-card" id="campaignMonitorPanel" style="display: none;">
+                            <h3>Active Campaign Progress</h3>
+                            
+                            <div class="progress-bar-wrap">
+                                <div class="progress-bar-fill" id="campaignProgressBar"></div>
+                            </div>
+                            <div class="progress-text-row">
+                                <span id="campaignProgressText">Preparing contacts...</span>
+                                <span id="campaignProgressPercent">0%</span>
+                            </div>
+
+                            <!-- Live Outreach Console -->
+                            <div class="console-container" style="margin-top: 16px;">
+                                <div class="console-header">
+                                    <span class="console-title">
+                                        <span class="typing-dot" style="background:#52c41a"></span>
+                                        CAMPAIGN QUEUE FLUSH
+                                    </span>
+                                </div>
+                                <div class="console-body" id="campaignConsole" style="max-height: 180px;">
+                                    <!-- Console logs -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- -------------------------------------------------------------
+             4. AXON CHATBOT VIEW
+        ------------------------------------------------------------- -->
+        <div class="view-pane" id="pane-chatbot">
+            <div class="chat-view-container">
+                <!-- Toolbar info -->
+                <div class="view-header" style="background: transparent; border-bottom: 1px solid var(--border);">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <div class="chat-avatar" style="background: var(--accent);">
+                            <svg viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M7.5 3.8L8.5 6.6L11.2 7.5L8.5 8.4L7.5 11.2L6.5 8.4L3.8 7.5L6.5 6.6Z" fill="#fff"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h1 class="view-title" style="font-size: 16px;">Axon</h1>
+                            <p class="view-subtitle" style="font-size: 11px; margin-top: 0; color: #52c41a;">Online · AI Assistant</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chat history viewport -->
+                <div class="chat-messages" id="chatBox">
+                    <div class="empty-state" id="chatWelcomeState" style="margin-top: 60px;">
+                        <!-- Large Star -->
+                        <svg class="welcome-star" style="position:static; margin-bottom: 16px; width: 64px; height: 64px;" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <defs>
+                                <radialGradient id="grad2" cx="50%" cy="30%" r="70%">
+                                    <stop offset="0%" stop-color="#efeae5"/>
+                                    <stop offset="60%" stop-color="#e8a98a"/>
+                                    <stop offset="100%" stop-color="#453478"/>
+                                </radialGradient>
+                            </defs>
+                            <path d="M40 4 C40 4 43 27 40 40 C40 40 63 37 76 40 C76 40 53 43 40 40 C40 40 43 63 40 76 C40 76 37 53 40 40 C40 40 17 43 4 40 C4 40 27 37 40 40 C40 40 37 17 40 4Z" fill="url(#grad2)"/>
+                        </svg>
+                        <span class="empty-state-title" style="font-size: 22px;">How can I help you, Tayyab?</span>
+                        <span class="empty-state-desc" style="max-width: 380px;">Ask me to craft outreach pitches, rewrite client messages in Roman Urdu/English, analyze scraper results, or help you debug scripts.</span>
+                        
+                        <div class="chat-suggestions" style="margin-top: 16px;">
+                            <div class="chat-suggestion-pill" onclick="sendSuggestion('Write an outreach pitch for a local Pharmacy')">💊 Pharmacy Pitch</div>
+                            <div class="chat-suggestion-pill" onclick="sendSuggestion('Draft a message in Roman Urdu for restaurant clients')">🍔 Urdu Pitch</div>
+                            <div class="chat-suggestion-pill" onclick="sendSuggestion('Give me tips on closing cold clients')">🤝 Sales Tips</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Input area -->
+                <div class="chat-input-area">
+                    <div class="chat-input-wrap">
+                        <textarea class="chat-textarea" id="chatInput" placeholder="Message Axon..." rows="1" onkeydown="handleChatKey(event)"></textarea>
+                        <button class="chat-send-btn" onclick="sendChatMessage()">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Toast container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+</div>
+
+<script>
+    // -----------------------------------------------------------------------------
+    // CLIENT CONFIG
+    // -----------------------------------------------------------------------------
+    const BACKEND_URL = "http://127.0.0.1:5001";
+    let activeTab = 'dashboard';
+    
+    // Polling interval IDs
+    let scraperPollInterval = null;
+    let senderPollInterval = null;
+    let waStatusPollInterval = null;
+    let waQrPollInterval = null;
+
+    // Toast utility
+    function showToast(message, type = 'info') {
+        const container = document.getElementById('toastContainer');
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        toast.textContent = message;
+        container.appendChild(toast);
+        
+        setTimeout(() => {
+            toast.style.animation = 'toastIn 0.3s ease reverse forwards';
+            setTimeout(() => toast.remove(), 300);
+        }, 3000);
+    }
+
+    // Tab switcher
+    function switchTab(tabName) {
+        // Clear active classes
+        document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.view-pane').forEach(el => el.classList.remove('active'));
+        
+        // Find click origin and target pane
+        const targetNavIndex = {
+            'dashboard': 0,
+            'hunter': 1,
+            'sender': 2,
+            'chatbot': 3
+        }[tabName];
+
+        const navItems = document.querySelectorAll('.nav-list .nav-item');
+        if (navItems[targetNavIndex]) {
+            navItems[targetNavIndex].classList.add('active');
+        }
+
+        const pane = document.getElementById(`pane-${tabName}`);
+        if (pane) {
+            pane.classList.add('active');
+        }
+
+        activeTab = tabName;
+
+        // Perform layout specific loads
+        if (tabName === 'dashboard') {
+            loadDashboardStats();
+        } else if (tabName === 'hunter') {
+            loadLeadsFileList();
+        } else if (tabName === 'sender') {
+            loadCampaignFileList();
+            checkWaClientStatus();
+        }
+    }
+
+    // -----------------------------------------------------------------------------
+    // DASHBOARD & STATS LOGIC
+    // -----------------------------------------------------------------------------
+    function loadDashboardStats() {
+        fetch(`${BACKEND_URL}/api/leads/history`)
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('statScrapedLists').textContent = data.length;
+                let totalLeads = 0;
+                let listHtml = '';
+                
+                data.forEach((list, idx) => {
+                    totalLeads += list.leads_count;
+                    if (idx < 5) {
+                        const dateStr = new Date(list.last_modified * 1000).toLocaleDateString();
+                        listHtml += `
+                            <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid var(--border-light); font-size:13.5px;">
+                                <div>
+                                    <div style="font-weight:600;">${list.name}</div>
+                                    <div style="font-size:11px; color:var(--text-secondary);">${dateStr}</div>
+                                </div>
+                                <div style="font-weight:600; color:var(--accent);">${list.leads_count} leads</div>
+                            </div>
+                        `;
+                    }
+                });
+                
+                document.getElementById('statTotalLeads').textContent = totalLeads;
+                if (listHtml) {
+                    document.getElementById('dashboardHistoryList').innerHTML = listHtml;
+                }
+            })
+            .catch(() => {
+                showToast("Could not retrieve history statistics.", "error");
+            });
+
+        fetch(`${BACKEND_URL}/api/whatsapp/status`)
+            .then(res => res.json())
+            .then(data => {
+                updateWaStatusUI(data.logged_in);
+            })
+            .catch(() => {});
+    }
+
+    function updateWaStatusUI(loggedIn) {
+        const dot = document.getElementById('waStatusDot');
+        const txt = document.getElementById('waStatusText');
+        const dashState = document.getElementById('statWhatsAppState');
+        const dashDetail = document.getElementById('statWhatsAppDetail');
+
+        if (loggedIn) {
+            dot.className = 'wa-dot connected';
+            txt.textContent = 'WhatsApp Connected';
+            if (dashState) {
+                dashState.textContent = 'Active';
+                dashState.style.color = '#52c41a';
+                dashDetail.textContent = 'Authenticated & Ready';
+            }
+        } else {
+            dot.className = 'wa-dot';
+            txt.textContent = 'WhatsApp Disconnected';
+            if (dashState) {
+                dashState.textContent = 'Offline';
+                dashState.style.color = '#d4a88c';
+                dashDetail.textContent = 'Requires mobile linking';
+            }
+        }
+    }
+
+    // -----------------------------------------------------------------------------
+    // LEAD SCRAEPER / HUNTER LOGIC
+    // -----------------------------------------------------------------------------
+    function startHunting() {
+        const location = document.getElementById('huntLocation').value.trim();
+        const category = document.getElementById('huntCategory').value.trim();
+        const headless = document.getElementById('huntHeadless').checked;
+
+        if (!location || !category) {
+            showToast("Both Location and Business Type are required.", "error");
+            return;
+        }
+
+        // Disable elements
+        document.getElementById('btnHuntStart').style.display = 'none';
+        document.getElementById('btnHuntStop').style.display = 'inline-flex';
+        document.getElementById('huntProgressContainer').style.display = 'block';
+        document.getElementById('hunterConsoleContainer').style.display = 'flex';
+        
+        document.getElementById('hunterConsole').innerHTML = '<div class="console-line">> Initializing browser scraper subprocess...</div>';
+
+        fetch(`${BACKEND_URL}/api/leads/hunt`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ location, business_type: category, headless })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.error) {
+                showToast(data.error, "error");
+                resetScraperUI();
+            } else {
+                showToast("Scraper task launched successfully.");
+                // Start polling logs
+                startScraperPolling();
+            }
+        })
+        .catch(err => {
+            showToast("Failed to connect to backend api.", "error");
+            resetScraperUI();
+        });
+    }
+
+    function stopHunting() {
+        fetch(`${BACKEND_URL}/api/leads/stop`, { method: 'POST' })
+            .then(res => res.json())
+            .then(data => {
+                showToast("Scraper stop command sent.");
+            })
+            .catch(() => showToast("Failed to send stop command.", "error"));
+    }
+
+    function resetScraperUI() {
+        document.getElementById('btnHuntStart').style.display = 'inline-flex';
+        document.getElementById('btnHuntStop').style.display = 'none';
+        clearInterval(scraperPollInterval);
+        scraperPollInterval = null;
+    }
+
+    function startScraperPolling() {
+        if (scraperPollInterval) clearInterval(scraperPollInterval);
+        
+        scraperPollInterval = setInterval(() => {
+            fetch(`${BACKEND_URL}/api/leads/status`)
+                .then(res => res.json())
+                .then(data => {
+                    const consoleEl = document.getElementById('hunterConsole');
+                    const progressFill = document.getElementById('huntProgressBar');
+                    const progressTxt = document.getElementById('huntProgressText');
+                    const progressPercent = document.getElementById('huntProgressPercent');
+
+                    // Output logs
+                    if (data.logs && data.logs.length > 0) {
+                        let logHtml = '';
+                        data.logs.forEach(line => {
+                            logHtml += `<div class="console-line">${escapeHtml(line)}</div>`;
+                        });
+                        consoleEl.innerHTML = logHtml;
+                        consoleEl.scrollTop = consoleEl.scrollHeight;
+                    }
+
+                    // Update time indicator
+                    document.getElementById('consoleTime').textContent = new Date().toLocaleTimeString();
+
+                    // Update progress
+                    if (data.progress) {
+                        const pct = data.progress.percentage || 0;
+                        progressFill.style.width = `${pct}%`;
+                        progressPercent.textContent = `${pct}%`;
+                        progressTxt.textContent = data.progress.status_text || "Processing...";
+                    }
+
+                    // Check if finished
+                    if (data.status !== "running") {
+                        resetScraperUI();
+                        if (data.status === "completed") {
+                            showToast("Scraper finished successfully!", "success");
+                            loadLeadsFileList();
+                        } else if (data.status === "failed") {
+                            showToast("Scraper subprocess failed.", "error");
+                        } else if (data.status === "stopped") {
+                            showToast("Scraper stopped.", "info");
+                        }
+                    }
+                })
+                .catch(() => {});
+        }, 1200);
+    }
+
+    function loadLeadsFileList() {
+        fetch(`${BACKEND_URL}/api/leads/history`)
+            .then(res => res.json())
+            .then(data => {
+                const selector = document.getElementById('leadsFileSelector');
+                if (data.length === 0) {
+                    selector.innerHTML = '<option value="">No lists found</option>';
+                    return;
+                }
+
+                let html = '<option value="">Select a lead list...</option>';
+                data.forEach(list => {
+                    html += `<option value="${list.path}">${list.name} (${list.leads_count} leads)</option>`;
+                });
+                selector.innerHTML = html;
+            })
+            .catch(() => {});
+    }
+
+    function loadSelectedLeadsFile() {
+        const path = document.getElementById('leadsFileSelector').value;
+        const body = document.getElementById('leadsTableBody');
+
+        if (!path) {
+            body.innerHTML = `
+                <tr>
+                    <td colspan="4" style="text-align: center; color: var(--text-secondary); padding: 32px 0;">
+                        Select a lead list from the dropdown to inspect verified contacts.
+                    </td>
+                </tr>`;
+            return;
+        }
+
+        body.innerHTML = `
+            <tr>
+                <td colspan="4" style="text-align: center; color: var(--text-secondary); padding: 32px 0;">
+                    Loading lead data...
+                </td>
+            </tr>`;
+
+        fetch(`${BACKEND_URL}/api/leads/view?path=${encodeURIComponent(path)}`)
+            .then(res => res.json())
+            .then(data => {
+                if (data.error) {
+                    showToast(data.error, "error");
+                    return;
+                }
+
+                if (data.leads.length === 0) {
+                    body.innerHTML = `
+                        <tr>
+                            <td colspan="4" style="text-align: center; color: var(--text-secondary); padding: 32px 0;">
+                                No records found in this list.
+                            </td>
+                        </tr>`;
+                    return;
+                }
+
+                let html = '';
+                data.leads.forEach(lead => {
+                    const cleanPhone = lead.phone.replace(/[^0-9+]/g, '');
+                    const waLink = `https://wa.me/${cleanPhone.replace('+', '')}`;
+                    html += `
+                        <tr>
+                            <td style="font-weight:600;">${escapeHtml(lead.name)}</td>
+                            <td>${escapeHtml(lead.phone)}</td>
+                            <td><a href="${lead.maps_url}" target="_blank">View on Maps &rarr;</a></td>
+                            <td><a href="${waLink}" target="_blank" style="color:#52c41a; font-weight:600;">Direct WhatsApp &rarr;</a></td>
+                        </tr>`;
+                });
+                body.innerHTML = html;
+            })
+            .catch(() => {
+                showToast("Failed to load leads list.", "error");
+            });
+    }
+
+    // -----------------------------------------------------------------------------
+    // WHATSAPP OUTREACH CAMPAIGNS LOGIC
+    // -----------------------------------------------------------------------------
+    function loadCampaignFileList() {
+        fetch(`${BACKEND_URL}/api/leads/history`)
+            .then(res => res.json())
+            .then(data => {
+                const selector = document.getElementById('campaignFileSelector');
+                if (data.length === 0) {
+                    selector.innerHTML = '<option value="">No lists found</option>';
+                    return;
+                }
+
+                let html = '<option value="">Choose leads source...</option>';
+                data.forEach(list => {
+                    html += `<option value="${list.path}">${list.name} (${list.leads_count} leads)</option>`;
+                });
+                selector.innerHTML = html;
+            })
+            .catch(() => {});
+    }
+
+    function checkWaClientStatus() {
+        fetch(`${BACKEND_URL}/api/whatsapp/status`)
+            .then(res => res.json())
+            .then(data => {
+                const authStateText = document.getElementById('waAuthStatusText');
+                const btnLogin = document.getElementById('btnWaLogin');
+                const btnLogout = document.getElementById('btnWaLogout');
+
+                updateWaStatusUI(data.logged_in);
+
+                if (data.logged_in) {
+                    authStateText.textContent = "Status: Authenticated";
+                    authStateText.style.color = "#52c41a";
+                    btnLogin.style.display = "none";
+                    btnLogout.style.display = "inline-flex";
+                    document.getElementById('waQrCodeWrapper').style.display = "none";
+                    clearInterval(waQrPollInterval);
+                    waQrPollInterval = null;
+                } else {
+                    btnLogout.style.display = "none";
+                    
+                    if (data.login_task && data.login_task.status === "waiting_qr") {
+                        authStateText.textContent = "Status: Waiting for QR Scan";
+                        authStateText.style.color = "#ff8c5a";
+                        btnLogin.style.display = "none";
+                        document.getElementById('waQrCodeWrapper').style.display = "block";
+                        renderQRText(data.login_task.qr_code, data.login_task.qr_exists);
+                        startQrPolling();
+                    } else {
+                        authStateText.textContent = "Status: Offline (Disconnected)";
+                        authStateText.style.color = "#d4a88c";
+                        btnLogin.style.display = "inline-flex";
+                        document.getElementById('waQrCodeWrapper').style.display = "none";
+                        clearInterval(waQrPollInterval);
+                        waQrPollInterval = null;
+                    }
+                }
+            })
+            .catch(() => {});
+    }
+
+    function startWaLogin() {
+        fetch(`${BACKEND_URL}/api/whatsapp/login`, { method: 'POST' })
+            .then(res => res.json())
+            .then(data => {
+                if (data.error) {
+                    showToast(data.error, "error");
+                } else {
+                    checkWaClientStatus();
+                }
+            })
+            .catch(() => showToast("Failed to initiate login.", "error"));
+    }
+
+    function cancelWaLogin() {
+        fetch(`${BACKEND_URL}/api/whatsapp/logout`, { method: 'POST' })
+            .then(res => res.json())
+            .then(() => {
+                checkWaClientStatus();
+            })
+            .catch(() => checkWaClientStatus());
+    }
+
+    function logoutWa() {
+        if (!confirm("Are you sure you want to log out and disconnect your device?")) return;
+        fetch(`${BACKEND_URL}/api/whatsapp/logout`, { method: 'POST' })
+            .then(res => res.json())
+            .then(data => {
+                showToast("Unlinked successfully.");
+                checkWaClientStatus();
+            })
+            .catch(() => showToast("Failed to logout.", "error"));
+    }
+
+    function renderQRText(rawText, qrExists) {
+        const container = document.getElementById('waQrCode');
+        if (qrExists) {
+            container.innerHTML = `<img src="${BACKEND_URL}/static/whatsapp_qr.png?t=${Date.now()}" style="max-width: 200px; height: auto;" />`;
+        } else {
+            container.innerHTML = `
+                <div style="text-align: center; color: var(--text-secondary); display: flex; flex-direction: column; gap: 8px; font-family: var(--font-main);">
+                    <div style="font-size: 13px; font-weight: 500;">${rawText}</div>
+                    <div style="font-size: 11px;">Playwright is launching the WhatsApp Web browser instance...</div>
+                </div>
+            `;
+        }
+    }
+
+    function startQrPolling() {
+        if (waQrPollInterval) clearInterval(waQrPollInterval);
+        
+        waQrPollInterval = setInterval(() => {
+            fetch(`${BACKEND_URL}/api/whatsapp/qr`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status === "logged_in") {
+                        showToast("Successfully authenticated with WhatsApp!", "success");
+                        checkWaClientStatus();
+                    } else if (data.status === "failed") {
+                        showToast("WhatsApp linking expired or failed.", "error");
+                        checkWaClientStatus();
+                    } else {
+                        renderQRText(data.qr_code, data.qr_exists);
+                    }
+                })
+                .catch(() => {});
+        }, 1500);
+    }
+
+    function startCampaign() {
+        const file = document.getElementById('campaignFileSelector').value;
+        const msg1 = document.getElementById('msgTemplate1').value;
+        const msg2 = document.getElementById('msgTemplate2').value;
+
+        if (!file) {
+            showToast("Please choose a lead source list.", "error");
+            return;
+        }
+
+        document.getElementById('btnCampaignStart').style.display = "none";
+        document.getElementById('btnCampaignStop').style.display = "inline-flex";
+        document.getElementById('campaignMonitorPanel').style.display = "block";
+        document.getElementById('campaignConsole').innerHTML = '<div class="console-line">> Starting WhatsApp Campaign subprocess...</div>';
+
+        fetch(`${BACKEND_URL}/api/sender/start`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ csv_file: file, message_1: msg1, message_2: msg2 })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.error) {
+                showToast(data.error, "error");
+                resetCampaignUI();
+            } else {
+                showToast("Campaign queue started.");
+                startCampaignPolling();
+            }
+        })
+        .catch(() => {
+            showToast("Failed to connect to API server.", "error");
+            resetCampaignUI();
+        });
+    }
+
+    function stopCampaign() {
+        fetch(`${BACKEND_URL}/api/sender/stop`, { method: 'POST' })
+            .then(res => res.json())
+            .then(data => {
+                showToast("Stop campaign signal sent.");
+            })
+            .catch(() => showToast("Failed to send stop command.", "error"));
+    }
+
+    function resetCampaignUI() {
+        document.getElementById('btnCampaignStart').style.display = "inline-flex";
+        document.getElementById('btnCampaignStop').style.display = "none";
+        clearInterval(senderPollInterval);
+        senderPollInterval = null;
+    }
+
+    function startCampaignPolling() {
+        if (senderPollInterval) clearInterval(senderPollInterval);
+        
+        senderPollInterval = setInterval(() => {
+            fetch(`${BACKEND_URL}/api/sender/status`)
+                .then(res => res.json())
+                .then(data => {
+                    const consoleEl = document.getElementById('campaignConsole');
+                    const progressFill = document.getElementById('campaignProgressBar');
+                    const progressTxt = document.getElementById('campaignProgressText');
+                    const progressPercent = document.getElementById('campaignProgressPercent');
+
+                    // Output logs
+                    if (data.logs && data.logs.length > 0) {
+                        let logHtml = '';
+                        data.logs.forEach(line => {
+                            logHtml += `<div class="console-line">${escapeHtml(line)}</div>`;
+                        });
+                        consoleEl.innerHTML = logHtml;
+                        consoleEl.scrollTop = consoleEl.scrollHeight;
+                    }
+
+                    // Update progress
+                    if (data.progress) {
+                        const pct = data.progress.percentage || 0;
+                        progressFill.style.width = `${pct}%`;
+                        progressPercent.textContent = `${pct}%`;
+                        progressTxt.textContent = data.progress.status_text || "In queue...";
+                    }
+
+                    // Check if finished
+                    if (data.status !== "running") {
+                        resetCampaignUI();
+                        if (data.status === "completed") {
+                            showToast("Outreach campaign finished successfully!", "success");
+                        } else if (data.status === "failed") {
+                            showToast("Campaign runner failed.", "error");
+                        } else if (data.status === "stopped") {
+                            showToast("Campaign stopped by user.", "info");
+                        }
+                    }
+                })
+                .catch(() => {});
+        }, 1500);
+    }
+
+    // -----------------------------------------------------------------------------
+    // AXON AI CHATBOT LOGIC
+    // -----------------------------------------------------------------------------
+    function handleChatKey(e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            sendChatMessage();
+        }
+    }
+
+    function sendSuggestion(text) {
+        document.getElementById('chatInput').value = text;
+        sendChatMessage();
+    }
+
+    function sendChatMessage() {
+        const input = document.getElementById('chatInput');
+        const text = input.value.trim();
+        if (!text) return;
+
+        // Clear input
+        input.value = '';
+        
+        // Remove welcome screen if exists
+        const welcome = document.getElementById('chatWelcomeState');
+        if (welcome) welcome.remove();
+
+        // Add user bubble
+        appendChatBubble(text, 'user');
+        
+        // Add typing indicator
+        showTypingIndicator();
+
+        fetch(`${BACKEND_URL}/chat`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message: text })
+        })
+        .then(res => res.json())
+        .then(data => {
+            hideTypingIndicator();
+            if (data.error) {
+                appendChatBubble(`Error: ${data.error}`, 'bot');
+            } else {
+                appendChatBubble(data.reply, 'bot');
+            }
+        })
+        .catch(() => {
+            hideTypingIndicator();
+            appendChatBubble("Could not connect to Axon backend server. Please verify Flask app is running at port 5001.", "bot");
+        });
+    }
+
+    function appendChatBubble(text, sender) {
+        const chatBox = document.getElementById('chatBox');
+        const row = document.createElement('div');
+        row.className = `message-row ${sender}`;
+
+        const avatar = sender === 'bot' ? `
+            <div class="chat-avatar">
+                <svg viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M7.5 3.8L8.5 6.6L11.2 7.5L8.5 8.4L7.5 11.2L6.5 8.4L3.8 7.5L6.5 6.6Z" fill="#fff"/>
+                </svg>
+            </div>` : '';
+
+        const parsedContent = sender === 'bot' ? marked.parse(text) : escapeHtml(text);
+
+        row.innerHTML = `
+            ${avatar}
+            <div style="display:flex; flex-direction:column;">
+                <div class="chat-bubble">${parsedContent}</div>
+                <span class="msg-time">${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+            </div>
+        `;
+
+        chatBox.appendChild(row);
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    function showTypingIndicator() {
+        const chatBox = document.getElementById('chatBox');
+        const row = document.createElement('div');
+        row.className = 'message-row bot';
+        row.id = 'chatTypingIndicator';
+        row.innerHTML = `
+            <div class="chat-avatar">
+                <svg viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M7.5 3.8L8.5 6.6L11.2 7.5L8.5 8.4L7.5 11.2L6.5 8.4L3.8 7.5L6.5 6.6Z" fill="#fff"/>
+                </svg>
+            </div>
+            <div class="chat-bubble" style="padding:10px 14px;">
+                <div class="typing-indicator">
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                </div>
+            </div>
+        `;
+        chatBox.appendChild(row);
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    function hideTypingIndicator() {
+        const indicator = document.getElementById('chatTypingIndicator');
+        if (indicator) indicator.remove();
+    }
+
+    // -----------------------------------------------------------------------------
+    // COMMON HELPERS
+    // -----------------------------------------------------------------------------
+    function escapeHtml(string) {
+        return String(string).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    // Initialize
+    window.addEventListener('DOMContentLoaded', () => {
+        marked.setOptions({ breaks: true, gfm: true });
+        
+        // Initial stats load
+        loadDashboardStats();
+        
+        // Start WhatsApp status background polling (every 5 seconds)
+        setInterval(() => {
+            if (activeTab !== 'sender') {
+                // Background status check for sidebar status bar
+                fetch(`${BACKEND_URL}/api/whatsapp/status`)
+                    .then(res => res.json())
+                    .then(data => updateWaStatusUI(data.logged_in))
+                    .catch(() => {});
+            }
+        }, 5000);
+    });
+</script>
+
+</body>
+</html>
