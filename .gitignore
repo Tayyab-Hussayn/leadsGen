@@ -4,3 +4,4 @@ leads/playwright_whatsapp_profile
 *.csv
 leads/*.csv
 leads/venv
+.env

@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from openai import OpenAI
+from dotenv import load_dotenv
 import subprocess
 import threading
 import shutil
@@ -11,12 +12,15 @@ import json
 import re
 import time
 
+# Load environment variables
+load_dotenv()
+
 app = Flask(__name__)
 CORS(app)
 
 # Create OpenAI client
 client = OpenAI(
-    api_key="sk-92xd8eMYxxiHh1RWaKjJtD9USnbBB3st7bmRRCli8lAWPtL9fViJmVTHMT7KcREG",
+    api_key=os.getenv("OPENAI_API_KEY"),
     base_url="https://opencode.ai/zen/v1/"
 )
 
