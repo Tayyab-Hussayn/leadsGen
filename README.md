@@ -3,6 +3,7 @@
 Find businesses without a website. Reach out to them on WhatsApp automatically. Built for freelancers and agencies doing manual outreach at scale.
 
 ## Demo
+https://github.com/user-attachments/assets/518836b5-6e9d-4bf6-903d-044dee458d09
 
 [Watch the demo](https://youtu.be/4-ziby_P5_4)
 
