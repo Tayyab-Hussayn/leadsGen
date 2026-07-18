@@ -5,8 +5,6 @@ Find businesses without a website. Reach out to them on WhatsApp automatically. 
 ## Demo
 https://github.com/user-attachments/assets/518836b5-6e9d-4bf6-903d-044dee458d09
 
-[Watch the demo](https://youtu.be/4-ziby_P5_4)
-
 ## What it does
 
 Axon Lead Suite scrapes Google Maps for businesses in any location and category, filters out anyone who already has a website, and hands you a clean lead list with name, phone number, and Maps link. From there you can launch automated, personalized WhatsApp campaigns straight from the dashboard, and get help along the way from Axon, a built-in AI assistant for coding and outreach questions.
